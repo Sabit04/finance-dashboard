@@ -1,36 +1,36 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Personal Finance Dashboard
 
-## Getting Started
+Import a bank CSV and get transactions auto-categorized, spend trends by category/month, and budget alerts.
 
-First, run the development server:
+Stack: Next.js (App Router, TypeScript) · Tailwind CSS · `papaparse` · `recharts` · Anthropic (Claude) API
+
+## Features
+
+- CSV import — matches common bank export header variants (`Date`/`Description`/`Amount` or `Debit`/`Credit`)
+- AI categorization via Claude tool calling, so the model returns a fixed category per transaction instead of free text
+- Spend-by-category and spend-by-month charts
+- Budget thresholds per category with over-budget alerts
+- Editable categories — correcting a category feeds a live categorization accuracy stat
+- Alert relevance rating, tracked as its own metric
+
+## Design notes
+
+- Categorization happens server-side (`src/app/api/categorize/route.ts`) so the Anthropic API key never reaches the browser.
+- Requests are capped at 500 transactions to bound cost and latency per call.
+- Accuracy and alert-relevance aren't vanity numbers — they're computed from real user corrections/ratings, not hardcoded.
+
+## Local development
 
 ```bash
+npm install
+cp .env.local.example .env.local   # add your Anthropic API key
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Get a key at [console.anthropic.com](https://console.anthropic.com). `.env.local` is git-ignored, so the key is never committed.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+Open [http://localhost:3000](http://localhost:3000) and drag in a CSV.
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## Deployment
 
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Deployed on Vercel. `ANTHROPIC_API_KEY` is set as a Vercel project environment variable, not in the repo.
