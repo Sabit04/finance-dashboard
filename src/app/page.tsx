@@ -57,7 +57,7 @@ export default function Home() {
       const raw = parseTransactionsCsv(text);
       const withIds = raw.map((transaction, index) => ({
         ...transaction,
-        id: `${index}-${transaction.date}-${transaction.description.slice(0, 10)}`,
+        id: `tx-${index}`,
       }));
 
       const response = await fetch("/api/categorize", {

@@ -89,7 +89,7 @@ ${transactionList}`,
   }
 
   const results = (toolUse.input as { results: { id: string; category: Category }[] }).results;
-  const categoryById = new Map(results.map((result) => [result.id, result.category]));
+  const categoryById = new Map(results.map((result) => [result.id.trim(), result.category]));
 
   const categorized = items.map((item) => ({
     id: item.id,
