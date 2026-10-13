@@ -38,10 +38,22 @@ export default function Home() {
   }, [transactions]);
 
   async function handleFileSelected(file: File) {
+    await processCsv(() => file.text());
+  }
+
+  async function handleLoadDemo() {
+    await processCsv(async () => {
+      const response = await fetch("/example-transactions.csv");
+      if (!response.ok) throw new Error("Couldn't load the sample data.");
+      return response.text();
+    });
+  }
+
+  async function processCsv(getText: () => Promise<string>) {
     setError(null);
     setIsLoading(true);
     try {
-      const text = await file.text();
+      const text = await getText();
       const raw = parseTransactionsCsv(text);
       const withIds = raw.map((transaction, index) => ({
         ...transaction,
@@ -123,6 +135,18 @@ export default function Home() {
         </header>
 
         <CsvUpload onFileSelected={handleFileSelected} isLoading={isLoading} />
+
+        <p className="-mt-5 text-center text-sm text-gray-500">
+          No CSV handy?{" "}
+          <button
+            type="button"
+            onClick={handleLoadDemo}
+            disabled={isLoading}
+            className="font-medium text-blue-600 hover:underline disabled:opacity-50"
+          >
+            Try it with sample data
+          </button>
+        </p>
 
         {error && (
           <div className="rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
