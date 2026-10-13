@@ -54,7 +54,7 @@ export function TransactionTable({ transactions, onCategoryChange }: Transaction
                 }`}
               >
                 {transaction.amount < 0 ? "-" : "+"}$
-                {Math.abs(transaction.amount).toFixed(2)}
+                {Math.abs(transaction.amount).toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
               </td>
             </tr>
           ))}

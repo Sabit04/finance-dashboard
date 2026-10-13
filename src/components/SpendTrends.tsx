@@ -5,10 +5,6 @@ import {
   Bar,
   BarChart,
   CartesianGrid,
-  Cell,
-  Legend,
-  Pie,
-  PieChart,
   ResponsiveContainer,
   Tooltip,
   XAxis,
@@ -16,18 +12,15 @@ import {
 } from "recharts";
 import type { Transaction } from "@/lib/types";
 
-const COLORS = [
-  "#3b82f6",
-  "#f97316",
-  "#10b981",
-  "#a855f7",
-  "#ef4444",
-  "#eab308",
-  "#06b6d4",
-  "#ec4899",
-  "#84cc16",
-  "#6366f1",
-];
+const BAR_COLOR = "#3b82f6";
+
+function formatCurrency(value: number): string {
+  return `$${value.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+}
+
+function formatAxis(value: number): string {
+  return value >= 1000 ? `$${(value / 1000).toFixed(1)}k` : `$${value}`;
+}
 
 interface SpendTrendsProps {
   transactions: Transaction[];
@@ -83,24 +76,19 @@ export function SpendTrends({ transactions }: SpendTrendsProps) {
       <div className="rounded-xl border border-gray-200 p-4">
         <h3 className="mb-4 text-sm font-semibold text-gray-700">Spend by category</h3>
         <ResponsiveContainer width="100%" height={280}>
-          <PieChart>
-            <Pie
-              data={spendByCategory}
-              dataKey="total"
-              nameKey="category"
-              cx="50%"
-              cy="45%"
-              innerRadius={50}
-              outerRadius={90}
-              paddingAngle={1}
-            >
-              {spendByCategory.map((entry, index) => (
-                <Cell key={entry.category} fill={COLORS[index % COLORS.length]} />
-              ))}
-            </Pie>
-            <Tooltip formatter={(value) => `$${Number(value).toFixed(2)}`} />
-            <Legend iconType="circle" iconSize={8} wrapperStyle={{ fontSize: 12 }} />
-          </PieChart>
+          <BarChart data={spendByCategory} layout="vertical" margin={{ left: 8, right: 16 }}>
+            <CartesianGrid strokeDasharray="3 3" horizontal={false} />
+            <XAxis type="number" tick={{ fontSize: 12 }} tickFormatter={formatAxis} />
+            <YAxis
+              type="category"
+              dataKey="category"
+              width={110}
+              tick={{ fontSize: 12 }}
+              interval={0}
+            />
+            <Tooltip formatter={(value) => [formatCurrency(Number(value)), "Spend"]} />
+            <Bar dataKey="total" fill={BAR_COLOR} radius={[0, 4, 4, 0]} />
+          </BarChart>
         </ResponsiveContainer>
       </div>
 
@@ -110,10 +98,9 @@ export function SpendTrends({ transactions }: SpendTrendsProps) {
           <BarChart data={spendByMonth}>
             <CartesianGrid strokeDasharray="3 3" vertical={false} />
             <XAxis dataKey="month" tick={{ fontSize: 12 }} />
-            <YAxis tick={{ fontSize: 12 }} />
-            <Tooltip formatter={(value) => `$${Number(value).toFixed(2)}`} />
-            <Legend />
-            <Bar dataKey="total" name="Spend" fill="#3b82f6" radius={[4, 4, 0, 0]} />
+            <YAxis tick={{ fontSize: 12 }} tickFormatter={formatAxis} />
+            <Tooltip formatter={(value) => [formatCurrency(Number(value)), "Spend"]} />
+            <Bar dataKey="total" fill={BAR_COLOR} radius={[4, 4, 0, 0]} />
           </BarChart>
         </ResponsiveContainer>
       </div>
