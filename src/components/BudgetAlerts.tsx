@@ -3,6 +3,13 @@
 import { useMemo } from "react";
 import type { AlertRating, Category, Transaction } from "@/lib/types";
 
+function money(value: number, decimals = 2): string {
+  return value.toLocaleString("en-US", {
+    minimumFractionDigits: decimals,
+    maximumFractionDigits: decimals,
+  });
+}
+
 interface BudgetAlertsProps {
   transactions: Transaction[];
   budgets: Partial<Record<Category, number>>;
@@ -56,7 +63,7 @@ export function BudgetAlerts({
         {spendByCategory.map(([category, spend]) => (
           <label key={category} className="flex items-center justify-between gap-2 text-xs">
             <span className="text-gray-700">
-              {category} <span className="text-gray-500">(${spend.toFixed(0)})</span>
+              {category} <span className="text-gray-500">(${money(spend, 0)})</span>
             </span>
             <input
               type="number"
@@ -87,8 +94,8 @@ export function BudgetAlerts({
               className="flex items-center justify-between rounded-lg bg-red-50 px-3 py-2 text-xs text-red-800"
             >
               <span>
-                You spent <strong>${spend.toFixed(2)}</strong> on {category}, over your $
-                {budgets[category]?.toFixed(2)} budget.
+                You spent <strong>${money(spend)}</strong> on {category}, over your $
+                {money(budgets[category] ?? 0)} budget.
               </span>
               <span className="flex gap-1">
                 <button

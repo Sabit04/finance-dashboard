@@ -82,7 +82,7 @@ export function SpendTrends({ transactions }: SpendTrendsProps) {
             <YAxis
               type="category"
               dataKey="category"
-              width={110}
+              width={130}
               tick={{ fontSize: 12 }}
               interval={0}
             />
