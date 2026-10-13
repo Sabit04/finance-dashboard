@@ -55,8 +55,8 @@ export function BudgetAlerts({
       <div className="mb-4 grid grid-cols-2 gap-x-6 gap-y-2 sm:grid-cols-3">
         {spendByCategory.map(([category, spend]) => (
           <label key={category} className="flex items-center justify-between gap-2 text-xs">
-            <span className="text-gray-600">
-              {category} <span className="text-gray-400">(${spend.toFixed(0)})</span>
+            <span className="text-gray-700">
+              {category} <span className="text-gray-500">(${spend.toFixed(0)})</span>
             </span>
             <input
               type="number"
@@ -69,14 +69,14 @@ export function BudgetAlerts({
                   event.target.value === "" ? NaN : Number(event.target.value),
                 )
               }
-              className="w-20 rounded border border-gray-200 px-1.5 py-0.5 text-right"
+              className="w-20 rounded border border-gray-300 bg-white px-1.5 py-0.5 text-right text-gray-900 placeholder:text-gray-400"
             />
           </label>
         ))}
       </div>
 
       {alerts.length === 0 ? (
-        <p className="text-xs text-gray-400">
+        <p className="text-xs text-gray-500">
           No categories are over budget. Set a budget above to get alerts.
         </p>
       ) : (

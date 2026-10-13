@@ -73,6 +73,7 @@ export async function POST(request: Request) {
         content: `Categorize each bank transaction below into exactly one of these categories: ${CATEGORIES.join(", ")}.
 
 Format of each line is "id | description | amount". A positive amount is money in (likely Income), a negative amount is money out.
+Guidance: gas stations, rideshare, parking and transit are Transportation; groceries, restaurants and coffee are Food & Dining; pharmacies, gyms and medical copays are Health & Fitness; streaming services are Entertainment. Use Other only when nothing fits.
 
 ${transactionList}`,
       },

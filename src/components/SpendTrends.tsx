@@ -33,10 +33,20 @@ interface SpendTrendsProps {
   transactions: Transaction[];
 }
 
-function monthKey(dateString: string): string {
-  const date = new Date(dateString);
-  if (Number.isNaN(date.getTime())) return "Unknown";
-  return date.toLocaleDateString("en-US", { year: "numeric", month: "short" });
+// Parse YYYY-MM-DD as a local date. new Date("2026-04-01") is UTC midnight,
+// which lands on March 31 in US time zones and shifts spend into the wrong month.
+function parseDate(dateString: string): Date {
+  const iso = /^(\d{4})-(\d{2})-(\d{2})/.exec(dateString.trim());
+  if (iso) return new Date(Number(iso[1]), Number(iso[2]) - 1, Number(iso[3]));
+  return new Date(dateString);
+}
+
+function monthKey(dateString: string): { key: string; label: string } {
+  const date = parseDate(dateString);
+  if (Number.isNaN(date.getTime())) return { key: "9999-99", label: "Unknown" };
+  const key = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}`;
+  const label = date.toLocaleDateString("en-US", { year: "numeric", month: "short" });
+  return { key, label };
 }
 
 export function SpendTrends({ transactions }: SpendTrendsProps) {
@@ -53,16 +63,17 @@ export function SpendTrends({ transactions }: SpendTrendsProps) {
   }, [transactions]);
 
   const spendByMonth = useMemo(() => {
-    const totals = new Map<string, number>();
+    const totals = new Map<string, { label: string; total: number }>();
     for (const transaction of transactions) {
       if (transaction.amount >= 0) continue;
-      const key = monthKey(transaction.date);
-      totals.set(key, (totals.get(key) ?? 0) + Math.abs(transaction.amount));
+      const { key, label } = monthKey(transaction.date);
+      const current = totals.get(key) ?? { label, total: 0 };
+      current.total += Math.abs(transaction.amount);
+      totals.set(key, current);
     }
-    return Array.from(totals.entries()).map(([month, total]) => ({
-      month,
-      total: Number(total.toFixed(2)),
-    }));
+    return Array.from(totals.entries())
+      .sort(([a], [b]) => a.localeCompare(b))
+      .map(([, { label, total }]) => ({ month: label, total: Number(total.toFixed(2)) }));
   }, [transactions]);
 
   if (transactions.length === 0) return null;
@@ -78,15 +89,17 @@ export function SpendTrends({ transactions }: SpendTrendsProps) {
               dataKey="total"
               nameKey="category"
               cx="50%"
-              cy="50%"
+              cy="45%"
+              innerRadius={50}
               outerRadius={90}
-              label={(props) => (props as { category?: string }).category ?? ""}
+              paddingAngle={1}
             >
               {spendByCategory.map((entry, index) => (
                 <Cell key={entry.category} fill={COLORS[index % COLORS.length]} />
               ))}
             </Pie>
             <Tooltip formatter={(value) => `$${Number(value).toFixed(2)}`} />
+            <Legend iconType="circle" iconSize={8} wrapperStyle={{ fontSize: 12 }} />
           </PieChart>
         </ResponsiveContainer>
       </div>

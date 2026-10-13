@@ -160,13 +160,13 @@ export default function Home() {
               <div className="rounded-xl border border-gray-200 bg-white p-4">
                 <p className="text-xs font-medium text-gray-500">Total spend</p>
                 <p className="mt-1 text-2xl font-semibold text-gray-900">
-                  ${totalSpend.toFixed(2)}
+                  ${totalSpend.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                 </p>
               </div>
               <div className="rounded-xl border border-gray-200 bg-white p-4">
                 <p className="text-xs font-medium text-gray-500">Total income</p>
                 <p className="mt-1 text-2xl font-semibold text-green-600">
-                  ${totalIncome.toFixed(2)}
+                  ${totalIncome.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                 </p>
               </div>
               <div className="rounded-xl border border-gray-200 bg-white p-4">
